@@ -1,6 +1,7 @@
 """便利な関数群"""
 import torch
 import subprocess
+import logging
 import json
 
 
@@ -51,7 +52,8 @@ def set_logging(result_dir):
     file_handler.setFormatter(formatter)  # フォーマットを指定
     logger.addHandler(file_handler)
     return logger
-    
+
+
 def update_json(json_file, dict):
     """jsonファイルをupdateするプログラム
         import json が必要
