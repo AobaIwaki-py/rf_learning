@@ -1,6 +1,7 @@
 """便利な関数群"""
 import torch
 import subprocess
+import json
 
 
 def get_device():
