@@ -50,3 +50,21 @@ def set_logging(result_dir):
     file_handler.setFormatter(formatter)  # フォーマットを指定
     logger.addHandler(file_handler)
     return logger
+    
+def update_json(json_file, dict):
+    """jsonファイルをupdateするプログラム
+        import json が必要
+    Parameters
+    ----------
+    json_file : str
+        jsonファイルのpath
+    dict : dict
+        追加もしくは更新したいdict
+    """
+    with open(json_file) as f:
+        df = json.load(f)
+
+    df.update(dict)
+
+    with open(json_file, 'w') as f:
+        json.dump(df, f, indent=4)
