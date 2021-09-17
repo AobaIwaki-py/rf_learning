@@ -5,18 +5,6 @@ import logging
 import json
 
 
-def get_device():
-    """
-    実行環境のデバイス(GPU or CPU) を取得
-    :return: デバイス (Device)
-    """
-    if torch.cuda.is_available():
-        device = torch.device('cuda')
-    else:
-        device = torch.device('cpu')
-    return device
-
-
 def get_git_revision():
     """
     現在のGitのリビジョンを取得
