@@ -3,6 +3,9 @@ import torch
 import subprocess
 import logging
 import json
+from datetime import datetime
+import os
+from dataclasses import asdict
 
 
 def get_git_revision():
@@ -13,6 +16,49 @@ def get_git_revision():
     cmd = "git rev-parse HEAD"
     revision = subprocess.check_output(cmd.split())  # 現在のコードのgitのリビジョンを取得
     return revision.decode()
+
+
+def setup_params(args_dict, path=None):
+    """
+    コマンドライン引数などの辞書を受け取り，実行時刻，Gitのリビジョン，jsonファイルからの引数と結合した辞書を返す．
+    
+        Args:
+            args_dict (dict): argparseのコマンドライン引数などから受け取る辞書
+            path (str, optional): パラメータが記述されたjsonファイルのパス
+
+        Returns:
+            dict: args_dictと実行時刻，Gitのリビジョン，jsonファイルからの引数が結合された辞書．
+                構造は {'args': args_dict, 'git_revision': <revision ID>, 'run_date': <実行時刻>, ...}．
+    """
+    run_date = datetime.now()
+    git_revision = get_git_revision()  # Gitのリビジョンを取得
+
+    param_dict = {}
+    if path:
+        param_dict = json.load(open(path, 'r'))  # jsonからパラメータを取得
+    param_dict.update({'args': args_dict})  # コマンドライン引数を上書き
+    param_dict.update({'run_date': run_date.strftime('%Y%m%d_%H%M%S')})  # 実行時刻を上書き
+    param_dict.update({'git_revision': git_revision})  # Gitリビジョンを上書き
+    return param_dict
+
+
+def dump_params(params, outdir, partial=False):
+    """
+    データクラスで定義されたパラメータをjson出力する関数
+    Args:
+        params (:ogj: `dataclass`): パラメータを格納したデータクラス
+        dir (str): 出力先のディレクトリ
+        partial (bool, optional): Trueの場合，args，run_date，git_revision を出力しない，
+    """
+    params_dict = asdict(params)  # デフォルトパラメータを取得
+    if os.path.exists(f'{outdir}/parameters.json'):
+        raise Exception('"parameters.json" is already exist. ')
+    if partial:
+        del params_dict['args']  # jsonからし指定しないキーを削除
+        del params_dict['run_date']  # jsonからし指定しないキーを削
+        del params_dict['git_revision']  # jsonからし指定しないキーを削
+    with open(f'{outdir}/parameters.json', 'w') as f:
+        json.dump(params_dict, f, indent=4)  # デフォルト設定をファイル出力
 
 
 def set_logging(result_dir):
