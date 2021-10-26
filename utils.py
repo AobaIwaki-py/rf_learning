@@ -106,6 +106,7 @@ def update_json(json_file, dict):
     with open(json_file, 'w') as f:
         json.dump(df, f, indent=4)
 
+
 def get_gpu_info(nvidia_smi_path='nvidia-smi', no_units=True):
     """
     空いているgpuの番号を持ってくるプログラム
