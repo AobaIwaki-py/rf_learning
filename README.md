@@ -35,7 +35,7 @@ python -p parameters.json main.py
 ```
 - 詳しいコマンドの使い方は以下のように確認できます．
 ```shell
-python main_lstm.py -h
+python main.py -h
 ```
 
 

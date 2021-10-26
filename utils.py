@@ -81,7 +81,7 @@ def set_logging(result_dir):
     handler.setFormatter(formatter)  # フォーマットを指定
     logger.addHandler(handler)
     # ファイル出力へのログ出力設定
-    file_handler = logging.FileHandler(f'{result_dir}log.log', 'w')  # ログ出力ファイル
+    file_handler = logging.FileHandler(f'{result_dir}/log.log', 'w')  # ログ出力ファイル
     file_handler.setLevel(logging.DEBUG)  # 出力ログレベル
     file_handler.setFormatter(formatter)  # フォーマットを指定
     logger.addHandler(file_handler)
