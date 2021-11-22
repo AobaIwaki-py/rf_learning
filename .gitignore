@@ -8,3 +8,4 @@ venv/
 *.log
 result/*
 parameters.json
+.python-version
