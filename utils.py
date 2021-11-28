@@ -1,4 +1,5 @@
 """便利な関数群"""
+from __future__ import annotations  # Python 3.7, 3.8はこの記述が必要
 import torch
 import subprocess
 import logging
@@ -6,19 +7,22 @@ import json
 from datetime import datetime
 import os
 from dataclasses import asdict
+import config
+from typing import Any
 
 
-def get_git_revision():
+def get_git_revision() -> str:
     """
     現在のGitのリビジョンを取得
-    :return: revision ID (str)
+    Returns:
+         str: revision ID
     """
     cmd = "git rev-parse HEAD"
     revision = subprocess.check_output(cmd.split())  # 現在のコードのgitのリビジョンを取得
     return revision.decode()
 
 
-def setup_params(args_dict, path=None):
+def setup_params(args_dict: dict[str, Any], path: str = None) -> dict[str, Any]:
     """
     コマンドライン引数などの辞書を受け取り，実行時刻，Gitのリビジョン，jsonファイルからの引数と結合した辞書を返す．
     
@@ -42,12 +46,12 @@ def setup_params(args_dict, path=None):
     return param_dict
 
 
-def dump_params(params, outdir, partial=False):
+def dump_params(params: 'config.Parameters', outdir: str, partial: bool = False) -> None:
     """
     データクラスで定義されたパラメータをjson出力する関数
     Args:
-        params (:ogj: `dataclass`): パラメータを格納したデータクラス
-        dir (str): 出力先のディレクトリ
+        params (:ogj: `Parameters`): パラメータを格納したデータクラス
+        outdir (str): 出力先のディレクトリ
         partial (bool, optional): Trueの場合，args，run_date，git_revision を出力しない，
     """
     params_dict = asdict(params)  # デフォルトパラメータを取得
@@ -61,11 +65,13 @@ def dump_params(params, outdir, partial=False):
         json.dump(params_dict, f, indent=4)  # デフォルト設定をファイル出力
 
 
-def set_logging(result_dir):
+def set_logging(result_dir: str) -> 'logging.Logger':
     """
     ログを標準出力とファイルに書き出すよう設定する関数．
-    :param result_dir: ログの出力先
-    :return: 設定済みのrootのlogger
+    Args:
+        result_dir (str): ログの出力先
+    Returns:
+        設定済みのrootのlogger
     
     Example: 
     >>> logger = logging.getLogger(__name__)
@@ -88,49 +94,47 @@ def set_logging(result_dir):
     return logger
 
 
-def update_json(json_file, dict):
+def update_json(json_file: str, input_dict: dict[str, Any]) -> None:
     """jsonファイルをupdateするプログラム
         import json が必要
-    Parameters
-    ----------
-    json_file : str
-        jsonファイルのpath
-    dict : dict
-        追加もしくは更新したいdict
+    Args:
+        json_file (str): jsonファイルのpath
+        input_dict (dict): 追加もしくは更新したいdict
     """
     with open(json_file) as f:
         df = json.load(f)
 
-    df.update(dict)
+    df.update(input_dict)
 
     with open(json_file, 'w') as f:
         json.dump(df, f, indent=4)
 
 
-def get_gpu_info(nvidia_smi_path='nvidia-smi', no_units=True):
+def get_gpu_info(nvidia_smi_path: str = 'nvidia-smi', no_units: bool = True) -> str:
     """
     空いているgpuの番号を持ってくるプログラム
-    :return: 空いているgpu番号 or 'cpu'
+    Returns:
+        str: 空いているgpu番号 or 'cpu'
     """
     keys = (
-    'index',
-    'uuid',
-    'name',
-    'timestamp',
-    'memory.total',
-    'memory.free',
-    'memory.used',
-    'utilization.gpu',
-    'utilization.memory'
-    )   
+        'index',
+        'uuid',
+        'name',
+        'timestamp',
+        'memory.total',
+        'memory.free',
+        'memory.used',
+        'utilization.gpu',
+        'utilization.memory'
+    )
     if torch.cuda.is_available():
         nu_opt = '' if not no_units else ',nounits'
         cmd = '%s --query-gpu=%s --format=csv,noheader%s' % (nvidia_smi_path, ','.join(keys), nu_opt)
         output = subprocess.check_output(cmd, shell=True)
         lines = output.decode().split('\n')
-        lines = [ line.strip() for line in lines if line.strip() != '' ]
+        lines = [line.strip() for line in lines if line.strip() != '']
 
-        gpu_info =  [{ k: v for k, v in zip(keys, line.split(', ')) } for line in lines]
+        gpu_info = [{k: v for k, v in zip(keys, line.split(', '))} for line in lines]
 
         min_gpu_index = 0
         min_gpu_memory_used = 100
@@ -139,8 +143,8 @@ def get_gpu_info(nvidia_smi_path='nvidia-smi', no_units=True):
             gpu_memory = int(gpu['utilization.gpu'])
             if min_gpu_memory_used >= gpu_memory:
                 min_gpu_memory_used = gpu_memory
-                min_gpu_index = gpu_index
+                min_gpu_index = int(gpu_index)
 
-        return "cuda:" + str(int(min_gpu_index))
+        return "cuda:" + str(min_gpu_index)
     else:
         return 'cpu'

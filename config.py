@@ -14,6 +14,7 @@ B) パラメータを指定して実行するときにやること．
 
 from dataclasses import dataclass, field
 from utils import dump_params
+from argparse import ArgumentParser
 
 
 @dataclass(frozen=True)
@@ -30,9 +31,11 @@ class Parameters:
     param2: dict = field(default_factory=lambda: {'k1': 'v1', 'k2': 'v2'})  # リストや辞書で与える例
 
 
-def common_args(parser):
+def common_args(parser: 'ArgumentParser'):
     """
     コマンドライン引数を定義する関数．
+    Args:
+        parser (:obj: ArgumentParser):
     """
     parser.add_argument("-p", "--parameters", help="パラメータ設定ファイルのパスを指定．デフォルトはNone", type=str, default=None)
     parser.add_argument("-a", "--arg1", type=int, help="arg1の説明", default=0)  # コマンドライン引数を指定

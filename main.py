@@ -6,7 +6,7 @@ from utils import set_logging
 import logging
 
 
-def main():
+def main() -> None:
 
     # コマンドライン引数の設定
     parser = argparse.ArgumentParser()
