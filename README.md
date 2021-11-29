@@ -5,7 +5,7 @@ ComNets Lab.における標準的プロジェクト構成の雛形を示すた�
 
 
 ## Requirement
-- Python 3.8
+- Python 3.9
 
 
 ## Installation
