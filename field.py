@@ -15,6 +15,7 @@ class Field:
 
     def __init__(self, params) -> None:
         self.__map: np.ndarray = np.zeros((params.map_width+1, params.map_height+1))
+        logger.info(f'Field size: {self.__map.shape}')
         self.__map_char: dict = params.map_char
     
     def set_agent(self, X: int, Y: int) -> None:

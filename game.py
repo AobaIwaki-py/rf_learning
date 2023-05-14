@@ -2,6 +2,7 @@ from agent import Agent
 from field import Field
 from logging import getLogger
 import argparse
+import numpy as np
 
 from config import common_args, Parameters
 from utils import set_logging, setup_params
@@ -15,7 +16,8 @@ class Game:
         self.__map_height = params.map_height
         self.__field = Field(params)
         self.__agent = Agent(params)
-        self.__agent.set_random_position()
+        # Set Initial Position
+        self.__agent.set_position(np.random.randint(1, self.__map_width), np.random.randint(1, self.__map_height))
 
     def get_instruction(self) -> bool:
         self.__direction = input('Please enter a direction (w/a/s/d) : ')
@@ -25,13 +27,13 @@ class Game:
 
     def check_next_position(self) -> bool:
         if self.__next_pos == (-1, -1):
-            print('Invalid direction!')
+            logger.info('Invalid direction!')
             return False
         elif self.__next_pos[0] <= 0 or self.__next_pos[0] > self.__map_width or self.__next_pos[1] <= 0 or self.__next_pos[1] > self.__map_height:
-            print('You are out of the field!')
+            logger.info('You are out of the field!')
             return False
         elif self.__field.is_wall(*self.__next_pos):
-            print('You hit the wall!')
+            logger.info('You hit the wall!')
             return False
         else:
             return True
