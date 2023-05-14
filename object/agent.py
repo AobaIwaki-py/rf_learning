@@ -4,33 +4,25 @@ import argparse
 # 
 from config import common_args, Parameters
 from utils import set_logging, setup_params
+from object.object import Object
 
 
 logger = getLogger(__name__)
 
-class Agent:
-    __X: int
-    __Y: int
-    
+class Agent(Object):
     def __init__(self) -> None:
-        pass
-
-    def set_position(self, X: int, Y: int) -> None:
-        self.__X = X
-        self.__Y = Y
-        
-    def get_position(self) -> Tuple[int, int]:
-        return self.__X, self.__Y
+        super().__init__()
     
     def get_next_position(self, direction:str =None) -> Tuple[int, int]:
+        x, y = self.get_position()
         if direction in ['up', 'w']:
-            return self.__X, self.__Y+1
+            return x, y+1
         elif direction in ['down', 's']:
-            return self.__X, self.__Y-1
+            return x, y-1
         elif direction in ['right', 'd']:
-            return self.__X+1, self.__Y
+            return x+1, y
         elif direction in ['left', 'a']:
-            return self.__X-1, self.__Y
+            return x-1, y
         else:
             return -1, -1
         
@@ -39,7 +31,7 @@ class Agent:
         if direction is None:
             direction = input("Please enter a direction (w/a/s/d) : ")
         if direction in ['up', 'w', 'down', 's', 'right', 'd', 'left', 'a']:
-            self.__X, self.__Y = self.get_next_position(direction)
+            self.set_position(*self.get_next_position(direction))
         else:
             raise ValueError(f'Invalid direction: {direction}')
          
@@ -53,4 +45,8 @@ if __name__ == '__main__':
     logger.info('Start')
     
     agent = Agent()
+    print(agent.name)
+    agent.set_position(1, 1)
+    print(agent.get_position())
+    print(agent.get_next_position('s'))
     

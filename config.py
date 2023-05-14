@@ -27,9 +27,15 @@ class Parameters:
     run_date: str = ''  # 実行時の時刻
     git_revision: str = ''  # 実行時のプログラムのGitのバージョン
     
+    # Map parameters
     map_width: int = 10  # マップの幅
     map_height: int = 5  # マップの高さ
-    map_char: dict = field(default_factory=lambda: {-1: '#', 0: '.', 1:'A', })  # マップの文字
+    map_char: dict = field(default_factory=lambda: {-1: '#', 0: '.', 1:'A', 2:'T'})  # 数値のマップの記号の対応
+    obj_num: dict = field(default_factory=lambda: {'Road':0,'Agent': 1, 'Treasure': 2})  # オブジェクトと数値の対応
+    wall_ratio: float = 0.1  # 壁の割合
+    
+    # Object parameters
+    seed: int = 0  # 乱数のシード値
 
 def common_args(parser: 'ArgumentParser'):
     """
