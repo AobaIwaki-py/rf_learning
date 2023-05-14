@@ -27,9 +27,9 @@ class Parameters:
     run_date: str = ''  # 実行時の時刻
     git_revision: str = ''  # 実行時のプログラムのGitのバージョン
     
-    param1: int = 0  # パラメータを定義する例
-    param2: dict = field(default_factory=lambda: {'k1': 'v1', 'k2': 'v2'})  # リストや辞書で与える例
-
+    map_width: int = 10  # マップの幅
+    map_height: int = 5  # マップの高さ
+    map_char: dict = field(default_factory=lambda: {-1: '#', 0: '.', 1:'A', })  # マップの文字
 
 def common_args(parser: 'ArgumentParser'):
     """

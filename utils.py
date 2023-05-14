@@ -1,14 +1,12 @@
 """便利な関数群"""
 from __future__ import annotations  # Python 3.7, 3.8はこの記述が必要
-import torch
 import subprocess
-import logging
 import json
 from datetime import datetime
 import os
 from dataclasses import asdict
-import config
 from typing import Any
+from logging import getLogger, StreamHandler, Formatter, DEBUG, Logger, FileHandler
 
 
 def get_git_revision() -> str:
@@ -65,33 +63,42 @@ def dump_params(params: 'config.Parameters', outdir: str, partial: bool = False)
         json.dump(params_dict, f, indent=4)  # デフォルト設定をファイル出力
 
 
-def set_logging(result_dir: str) -> 'logging.Logger':
+def set_logging(result_dir: str, file_name: str = "log", 
+                stdout_log_level: str ="INFO", fileout_log_level: str ="DEBUG") -> Logger:
     """
     ログを標準出力とファイルに書き出すよう設定する関数．
-    Args:
-        result_dir (str): ログの出力先
-    Returns:
-        設定済みのrootのlogger
+
+        Args:
+            result_dir (str): ログの出力先
+            stdout_log_level: str = "INFO": 標準出力(ターミナル)のログレベル
+            fileout_log_level: str = "DEBUG": ファイル出力のログレベル
+        Returns:
+            設定済みのrootのlogger
     
-    Example: 
-    >>> logger = logging.getLogger(__name__)
-    >>> set_logging(result_dir)
-    >>> logger.info('log message...')
+        Example: 
+        >>> # logger = logging.getLogger(__name__)
+        >>> # set_logging(result_dir)
+        >>> # logger.info('log message...')
     """
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)  # ログレベル
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')  # ログのフォーマット
+    logger = getLogger()
+    # 実際に出力されるのレベルは、handlerとfile_handlerでそれぞれ指定するので、
+    # 以下では、最も出力レベルが低いDEBUGにしておく。
+    logger.setLevel(DEBUG)  # 全体のログレベル
+    
+    # formatter = Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')  # ログのフォーマット
+    formatter = Formatter('%(asctime)s %(name)s:%(lineno)s %(funcName)s [%(levelname)s]: %(message)s')  # ログのフォーマット
+
     # 標準出力へのログ出力設定
-    handler = logging.StreamHandler()
-    handler.setLevel(logging.INFO)  # 出力ログレベル
+    handler = StreamHandler()
+    handler.setLevel(stdout_log_level.upper()) # ターミナル出力ログレベル
     handler.setFormatter(formatter)  # フォーマットを指定
     logger.addHandler(handler)
+    
     # ファイル出力へのログ出力設定
-    file_handler = logging.FileHandler(f'{result_dir}/log.log', 'w')  # ログ出力ファイル
-    file_handler.setLevel(logging.DEBUG)  # 出力ログレベル
+    file_handler = FileHandler(f'{result_dir}/{file_name}.log', 'w')  # ログ出力ファイル
+    file_handler.setLevel(fileout_log_level.upper()) # ファイル出力ログレベル
     file_handler.setFormatter(formatter)  # フォーマットを指定
     logger.addHandler(file_handler)
-    return logger
 
 
 def update_json(json_file: str, input_dict: dict[str, Any]) -> None:

@@ -27,7 +27,6 @@ def main() -> None:
     # 使用例
     logger.info('parameters: ')
     logger.info(params)
-    logger.info(params.param1)  # params変数は各パラメータにドットアクセスが可能．
     logger.info(params.args['arg1'])  # コマンドライン引数はargs['']でアクセス．
 
     # do something...

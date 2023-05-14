@@ -9,3 +9,4 @@ venv/
 result/*
 parameters.json
 .python-version
+notebook/
